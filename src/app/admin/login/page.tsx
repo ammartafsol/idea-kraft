@@ -23,6 +23,13 @@ export default async function LoginPage({ searchParams }: PageProps<"/admin/logi
   const nextPath = typeof next === "string" && next.startsWith("/admin") ? next : "/admin";
   if (await getAdmin()) redirect(nextPath);
 
+  // Pre-filled sign-in, at the owner's request. WARNING: when ADMIN_LOGIN_PREFILL_PASSWORD
+  // is set, anyone who opens this page can sign in. Delete that env var to turn it off.
+  const prefill = {
+    username: process.env.ADMIN_LOGIN_PREFILL_USERNAME ?? "admin",
+    password: process.env.ADMIN_LOGIN_PREFILL_PASSWORD ?? "",
+  };
+
   return (
     <div className="grid min-h-[100svh] lg:grid-cols-[1.15fr_1fr]">
       <Suspense>
@@ -81,7 +88,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/admin/logi
           <p className="mt-10 font-mono text-[0.7rem] tracking-[0.16em] text-muted uppercase lg:mt-0">Admin</p>
           <h1 className="mt-3 font-display text-[2.6rem] leading-none font-bold tracking-[-0.035em]">Welcome back.</h1>
           <p className="mt-3 text-muted">Sign in to see how the site is performing.</p>
-          <LoginForm next={nextPath} />
+          <LoginForm next={nextPath} prefill={prefill} />
         </div>
 
         <p className="text-center text-xs text-muted">

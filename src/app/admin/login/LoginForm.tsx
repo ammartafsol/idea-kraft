@@ -11,7 +11,7 @@ const field =
 const fieldOk = "border-line-strong focus:border-fg focus:ring-fg/8";
 const fieldBad = "border-[#d03b3b] focus:border-[#d03b3b] focus:ring-[#d03b3b]/15";
 
-export function LoginForm({ next }: { next: string }) {
+export function LoginForm({ next, prefill }: { next: string; prefill: { username: string; password: string } }) {
   const [state, formAction, pending] = useActionState<LoginState, FormData>(loginAction, {});
   const form = useRef<HTMLFormElement>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -93,7 +93,7 @@ export function LoginForm({ next }: { next: string }) {
             spellCheck={false}
             required
             maxLength={40}
-            defaultValue={state.username}
+            defaultValue={state.username ?? prefill.username}
             placeholder="admin"
             onBlur={onBlur}
             onChange={onChange}
@@ -118,6 +118,7 @@ export function LoginForm({ next }: { next: string }) {
             id="password"
             name="password"
             type={showPassword ? "text" : "password"}
+            defaultValue={prefill.password}
             autoComplete="current-password"
             required
             maxLength={200}
