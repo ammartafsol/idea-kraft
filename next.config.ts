@@ -1,30 +1,13 @@
 import type { NextConfig } from "next";
 
-function awsRemotePattern():
-  | { protocol: "http" | "https"; hostname: string; pathname: string }[]
-  | undefined {
-  const raw = process.env.NEXT_PUBLIC_AWS_URL;
-  if (!raw) return undefined;
-  try {
-    const url = new URL(raw);
-    const protocol = url.protocol.replace(":", "") as "http" | "https";
-    if (protocol !== "http" && protocol !== "https") return undefined;
-    return [
-      {
-        protocol,
-        hostname: url.hostname,
-        pathname: "/**",
-      },
-    ];
-  } catch {
-    return undefined;
-  }
-}
-
 const nextConfig: NextConfig = {
   output: "standalone",
+  poweredByHeader: false,
   images: {
-    remotePatterns: awsRemotePattern() ?? [],
+    formats: ["image/avif", "image/webp"],
+    remotePatterns: [
+      { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
+    ],
   },
   async headers() {
     return [
@@ -36,7 +19,7 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=(self)",
+            value: "camera=(), microphone=(), geolocation=()",
           },
         ],
       },
