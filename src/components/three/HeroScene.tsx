@@ -39,13 +39,16 @@ float snoise(vec3 v){
 const vertexShader = /* glsl */ `
 uniform float uTime;
 uniform float uHover;
+uniform float uPulse;
 varying vec3 vNormal;
 varying vec3 vView;
 varying float vDisp;
 ${noise}
 float displacement(vec3 p){
-  float n = snoise(p * 0.8 + uTime * 0.16) * 0.26;
+  float n = snoise(p * 0.8 + uTime * 0.16) * 0.26 * (1.0 + uPulse * 0.6);
   n += snoise(p * 1.7 - uTime * 0.1) * 0.035 * (1.0 + uHover);
+  // A fast, high-frequency ripple that only exists while a tap "pulse" decays.
+  n += snoise(p * 3.2 + uTime * 2.4) * 0.07 * uPulse;
   return n;
 }
 void main(){
@@ -72,6 +75,7 @@ uniform vec3 uBase;
 uniform vec3 uAccent;
 uniform float uTime;
 uniform float uDark;
+uniform float uPulse;
 varying vec3 vNormal;
 varying vec3 vView;
 varying float vDisp;
@@ -86,15 +90,38 @@ void main(){
   float soft = pow(max(dot(reflect(-light, n), vView), 0.0), 6.0);
   vec3 col = uBase * (0.45 + diff * 1.4);
   col += vec3(0.16) * soft * (1.0 - fres) * (1.0 - 0.5 * uDark);
-  col = mix(col, uAccent, fres * (0.8 + 0.2 * band));
+  col = mix(col, uAccent, min(1.0, fres * (0.8 + 0.2 * band) + uPulse * 0.18));
   col += spec * mix(0.5, 0.32, uDark);
   col += uAccent * band * 0.025;
   gl_FragColor = vec4(col, 1.0);
 }`;
 
-type BlobProps = { pointer: React.RefObject<{ x: number; y: number }>; dark: boolean };
+/**
+ * Gesture impulses recorded by HeroVisual's event handlers. The scene only
+ * reads them: the current spin and pulse are derived from how long ago each
+ * impulse happened, so nothing here mutates shared state.
+ */
+export type OrbInteraction = {
+  /** Angular velocity (rad/s) at the moment of the last drag or tap. */
+  velocity: number;
+  /** performance.now() of that impulse. */
+  velocityAt: number;
+  /** performance.now() of the last tap, or 0. */
+  pulseAt: number;
+};
 
-function Blob({ pointer, dark }: BlobProps) {
+const SPIN_DECAY = 2.4; // per second
+const PULSE_MS = 1100;
+
+type BlobProps = {
+  pointer: React.RefObject<{ x: number; y: number }>;
+  interaction: React.RefObject<OrbInteraction>;
+  dark: boolean;
+  compact: boolean;
+};
+
+function Blob({ pointer, interaction, dark, compact }: BlobProps) {
+  const spinAngle = useRef(0);
   const group = useRef<THREE.Group>(null);
   const ring = useRef<THREE.Mesh>(null);
   const material = useRef<THREE.ShaderMaterial>(null);
@@ -103,6 +130,7 @@ function Blob({ pointer, dark }: BlobProps) {
     () => ({
       uTime: { value: 0 },
       uHover: { value: 0 },
+      uPulse: { value: 0 },
       uDark: { value: 0 },
       uBase: { value: new THREE.Color("#151515") },
       uAccent: { value: new THREE.Color("#c6ff4d") },
@@ -126,10 +154,25 @@ function Blob({ pointer, dark }: BlobProps) {
     const distance = Math.hypot(p.x, p.y);
     m.uniforms.uHover.value = THREE.MathUtils.damp(m.uniforms.uHover.value, distance < 0.6 ? 1 : 0, 3, delta);
 
+    // Drag momentum: velocity decays smoothly; a slow idle drift keeps it alive on touch screens.
+    const io = interaction.current;
+    const now = performance.now();
+    let pulse = 0;
+    if (io) {
+      const velocity = io.velocity * Math.exp((-SPIN_DECAY * (now - io.velocityAt)) / 1000);
+      spinAngle.current += (velocity + (compact ? 0.18 : 0)) * delta;
+      const t = io.pulseAt ? (now - io.pulseAt) / PULSE_MS : 1;
+      pulse = t < 1 ? Math.pow(1 - t, 2) : 0;
+    }
+    m.uniforms.uPulse.value = pulse;
+
     if (group.current) {
-      group.current.rotation.y = THREE.MathUtils.damp(group.current.rotation.y, p.x * 0.6, 3, delta);
+      group.current.rotation.y = THREE.MathUtils.damp(group.current.rotation.y, p.x * 0.6 + spinAngle.current, 6, delta);
       group.current.rotation.x = THREE.MathUtils.damp(group.current.rotation.x, -p.y * 0.4, 3, delta);
       group.current.position.y = Math.sin(state.clock.elapsedTime * 0.6) * 0.08;
+      // Squash-and-stretch bounce on tap.
+      const wobble = Math.sin(state.clock.elapsedTime * 18) * 0.04 * pulse;
+      group.current.scale.set(1 + 0.07 * pulse + wobble, 1 + 0.07 * pulse - wobble, 1 + 0.07 * pulse);
     }
     if (ring.current) {
       ring.current.rotation.z += delta * 0.25;
@@ -140,7 +183,7 @@ function Blob({ pointer, dark }: BlobProps) {
   return (
     <group ref={group}>
       <mesh>
-        <icosahedronGeometry args={[1.35, 48]} />
+        <icosahedronGeometry args={[1.35, compact ? 28 : 48]} />
         <shaderMaterial ref={material} uniforms={uniforms} vertexShader={vertexShader} fragmentShader={fragmentShader} />
       </mesh>
       <mesh ref={ring} rotation={[1.15, 0.2, 0]}>
@@ -170,22 +213,27 @@ function Satellite({ radius, speed, size, dark, offset = 0 }: { radius: number; 
 
 export default function HeroScene({
   pointer,
+  interaction,
   dark,
   active,
+  compact = false,
 }: {
   pointer: React.RefObject<{ x: number; y: number }>;
+  interaction: React.RefObject<OrbInteraction>;
   dark: boolean;
   active: boolean;
+  /** Phone profile: lighter geometry and a lower pixel-ratio cap. */
+  compact?: boolean;
 }) {
   return (
     <Canvas
       frameloop={active ? "always" : "never"}
-      dpr={[1, 1.75]}
-      camera={{ position: [0, 0, 5.4], fov: 42 }}
+      dpr={compact ? [1, 1.5] : [1, 1.75]}
+      camera={{ position: [0, 0, 6.6], fov: 42 }}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       aria-hidden
     >
-      <Blob pointer={pointer} dark={dark} />
+      <Blob pointer={pointer} interaction={interaction} dark={dark} compact={compact} />
     </Canvas>
   );
 }

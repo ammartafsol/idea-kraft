@@ -8,6 +8,15 @@
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
+/* Hover stand-in for touch screens: active while a <TouchActive> ancestor is in focus mid-screen. */
+@custom-variant touch-active {
+  @media (hover: none) {
+    &:where([data-inview="true"], [data-inview="true"] *) {
+      @slot;
+    }
+  }
+}
+
 :root {
   color-scheme: light;
   --bg: #f7f7f4;

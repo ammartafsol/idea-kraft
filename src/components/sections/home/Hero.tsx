@@ -1,13 +1,15 @@
 "use client";
 
 import { motion, useMotionValue, useScroll, useSpring, useTransform, useReducedMotion } from "motion/react";
-import { useRef, useSyncExternalStore, type PointerEvent } from "react";
+import { useId, useRef, useSyncExternalStore, type PointerEvent } from "react";
 import { SplitText } from "@/components/animation/SplitText";
 import { Magnetic } from "@/components/animation/Magnetic";
 import { ButtonLink } from "@/components/ui/Button";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { LogoMark } from "@/components/ui/Logo";
 import { HeroVisual } from "@/components/three/HeroVisual";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { cn } from "@/lib/utils";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -25,6 +27,7 @@ export function Hero() {
   const pointer = useRef({ x: 0, y: 0 });
   const reduce = useReducedMotion();
   const delay = useIntroDelay();
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   // Pointer → subtle counter-movement of the headline (depth).
   const mx = useMotionValue(0);
@@ -59,10 +62,10 @@ export function Hero() {
     >
       <BackgroundGrid />
 
-      {/* 3D centrepiece: right side on desktop, tucked behind the headline on phones */}
+      {/* Desktop 3D centrepiece: sits behind the content on the right and follows the mouse. */}
       <motion.div
         style={reduce ? undefined : { scale: visualScale, opacity: fade }}
-        className="pointer-events-none absolute top-[41%] right-[-6%] -z-10 aspect-square w-[64vw] sm:top-[34%] sm:right-[-8%] sm:w-[60vw] md:top-[8%] md:right-[-4%] md:w-[min(52vw,760px)]"
+        className="pointer-events-none absolute top-[10%] right-[0%] -z-10 hidden aspect-square w-[min(46vw,680px)] md:block"
       >
         <motion.div
           className="size-full"
@@ -70,7 +73,7 @@ export function Hero() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.6, delay: delay + 0.2, ease }}
         >
-          <HeroVisual pointer={pointer} className="size-full" />
+          {isDesktop && <HeroVisual pointer={pointer} className="size-full" />}
         </motion.div>
       </motion.div>
 
@@ -85,7 +88,7 @@ export function Hero() {
           <p className="eyebrow hidden text-muted md:block">Strategy · Design · Engineering</p>
         </motion.div>
 
-        <motion.div style={{ x: tx, y: ty }} className="mt-12 flex-1 md:mt-[6vh]">
+        <motion.div style={{ x: tx, y: ty }} className="mt-10 md:mt-[6vh] md:flex-1">
           <SplitText
             as="h1"
             by="chars"
@@ -98,7 +101,24 @@ export function Hero() {
           />
         </motion.div>
 
-        <div className="mt-12 grid items-end gap-8 md:mt-16 md:grid-cols-12">
+        {/* Phone 3D centrepiece: in normal flow (never overlaps text) and fully touchable. */}
+        <motion.div
+          className="relative -mt-6 flex flex-1 items-center justify-end md:hidden"
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.4, delay: delay + 0.5, ease }}
+        >
+          <RotatingBadge delay={delay} className="absolute bottom-[10%] left-0 size-24 sm:size-28" />
+          {!isDesktop && (
+            <HeroVisual
+              pointer={pointer}
+              touchable
+              className="-mr-[4vw] aspect-square w-[72vw] max-w-[25rem] sm:w-[54vw]"
+            />
+          )}
+        </motion.div>
+
+        <div className="mt-4 grid items-end gap-8 md:mt-16 md:grid-cols-12">
           <motion.p
             className="lede text-muted md:col-span-5"
             initial={{ opacity: 0, y: 20 }}
@@ -143,7 +163,7 @@ export function Hero() {
         </div>
       </motion.div>
 
-      <RotatingBadge delay={delay} />
+      <RotatingBadge delay={delay} className="absolute right-[33%] bottom-[19%] hidden size-28 lg:block xl:size-32" />
     </section>
   );
 }
@@ -168,22 +188,23 @@ function BackgroundGrid() {
   );
 }
 
-function RotatingBadge({ delay }: { delay: number }) {
+function RotatingBadge({ delay, className }: { delay: number; className?: string }) {
   const text = "Novara Studio • Strategy • Design • Code • ";
+  const pathId = `badge-circle${useId().replace(/:/g, "")}`;
   return (
     <motion.div
       aria-hidden
-      className="pointer-events-none absolute right-[33%] bottom-[19%] hidden size-28 lg:block xl:size-32"
+      className={cn("pointer-events-none", className)}
       initial={{ opacity: 0, scale: 0.6 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 1, delay: delay + 1.2, ease }}
     >
       <svg viewBox="0 0 120 120" className="size-full animate-[spin-slow_24s_linear_infinite]">
         <defs>
-          <path id="badge-circle" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0" />
+          <path id={pathId} d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0" />
         </defs>
         <text className="fill-fg font-mono text-[8.6px] tracking-[0.2em] uppercase">
-          <textPath href="#badge-circle">{text}</textPath>
+          <textPath href={`#${pathId}`}>{text}</textPath>
         </text>
       </svg>
       <div className="absolute inset-0 grid place-items-center">

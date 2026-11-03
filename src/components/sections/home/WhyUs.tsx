@@ -2,6 +2,7 @@ import { reasons, stats } from "@/data/studio";
 import { SplitText } from "@/components/animation/SplitText";
 import { Reveal } from "@/components/animation/Reveal";
 import { Counter } from "@/components/animation/Counter";
+import { TouchActive } from "@/components/animation/TouchActive";
 import { PlaceholderNote } from "@/components/ui/Eyebrow";
 import { cn, pad } from "@/lib/utils";
 
@@ -34,13 +35,17 @@ export function WhyUs() {
                 delay={(i % 2) * 0.08 + Math.floor(i / 2) * 0.06}
                 className="group relative border-b border-inverse-line p-7 transition-colors sm:even:border-l duration-500 hover:bg-[color-mix(in_srgb,var(--inverse-bg)_92%,var(--accent))] md:p-9"
               >
-                <span
-                  aria-hidden
-                  className="absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 bg-accent transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:scale-x-100"
-                />
-                <span className="font-mono text-xs text-inverse-muted transition-colors group-hover:text-accent">{pad(i + 1)}</span>
-                <h3 className="display-sm mt-8 md:mt-14">{r.title}</h3>
-                <p className="mt-3 text-[0.95rem] text-inverse-muted">{r.text}</p>
+                <TouchActive>
+                  <span
+                    aria-hidden
+                    className="absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 bg-accent transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:scale-x-100 touch-active:scale-x-100"
+                  />
+                  <span className="font-mono text-xs text-inverse-muted transition-colors group-hover:text-accent touch-active:text-accent">
+                    {pad(i + 1)}
+                  </span>
+                  <h3 className="display-sm mt-8 transition-colors duration-500 touch-active:text-accent md:mt-14">{r.title}</h3>
+                  <p className="mt-3 text-[0.95rem] text-inverse-muted">{r.text}</p>
+                </TouchActive>
               </Reveal>
             ))}
           </ol>

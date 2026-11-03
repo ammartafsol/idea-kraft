@@ -24,9 +24,9 @@ const fills: Record<Variant, string> = {
 };
 
 const hoverText: Record<Variant, string> = {
-  accent: "group-hover/btn:text-bg",
-  solid: "group-hover/btn:text-accent-ink",
-  outline: "group-hover/btn:text-bg",
+  accent: "group-hover/btn:text-bg group-active/btn:text-bg",
+  solid: "group-hover/btn:text-accent-ink group-active/btn:text-accent-ink",
+  outline: "group-hover/btn:text-bg group-active/btn:text-bg",
   ghost: "",
 };
 
@@ -46,7 +46,7 @@ function ButtonInner({ children, variant, arrow }: { children: ReactNode; varian
       <span
         aria-hidden
         className={cn(
-          "absolute inset-0 translate-y-full rounded-full transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover/btn:translate-y-0",
+          "absolute inset-0 translate-y-full rounded-full transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover/btn:translate-y-0 group-active/btn:translate-y-0",
           fills[variant],
         )}
       />

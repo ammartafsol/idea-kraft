@@ -48,9 +48,9 @@ export function CallToAction({
               >
                 <span
                   aria-hidden
-                  className="absolute inset-0 scale-0 rounded-full bg-bg transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:scale-100"
+                  className="absolute inset-0 scale-0 rounded-full bg-bg transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:scale-100 group-active:scale-100"
                 />
-                <span className="relative flex flex-col items-center gap-2 font-display text-xl font-semibold tracking-[-0.02em] transition-colors duration-500 group-hover:text-fg md:text-2xl">
+                <span className="relative flex flex-col items-center gap-2 font-display text-xl font-semibold tracking-[-0.02em] transition-colors duration-500 group-hover:text-fg group-active:text-fg md:text-2xl">
                   <ArrowUpRight className="size-7 transition-transform duration-500 group-hover:rotate-45" aria-hidden />
                   Let&apos;s Talk
                 </span>
