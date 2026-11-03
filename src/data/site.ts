@@ -1,12 +1,27 @@
 import type { NavItem, SocialLink } from "@/types";
 
+/** The canonical public domain. Production always uses this for canonical URLs, the sitemap and share previews. */
+export const PRODUCTION_URL = "https://idea-kraft.com";
+
+/**
+ * - Production deployment on Vercel → the custom domain (never the *.vercel.app alias).
+ * - Preview deployments → their own preview URL.
+ * - Local / other hosts → NEXT_PUBLIC_SITE_URL, else localhost.
+ * Only read on the server (metadata, sitemap, robots, structured data).
+ */
+function resolveSiteUrl() {
+  if (process.env.VERCEL_ENV === "production") return PRODUCTION_URL;
+  if (process.env.VERCEL_ENV === "preview" && process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+}
+
 export const siteConfig = {
   name: "NOVARA STUDIO",
   shortName: "Novara",
   tagline: "We Build Digital Experiences That Move Brands Forward.",
   description:
     "Novara Studio is an independent creative digital agency. We combine strategy, design and modern engineering to build websites, e-commerce and digital products for ambitious brands.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  url: resolveSiteUrl(),
   email: "hello@novara.studio",
   location: "Binghamton, NY · Working worldwide",
   /** Studio address, used by the contact-page globe, directions link and structured data.
