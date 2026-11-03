@@ -123,7 +123,7 @@ export function LoginForm({ next, prefill }: { next: string; prefill: { username
             required
             maxLength={200}
             autoFocus={Boolean(state.error)}
-            placeholder="••••••••••••"
+            placeholder="Enter your password"
             onKeyDown={trackCaps}
             onKeyUp={trackCaps}
             onBlur={onBlur}
