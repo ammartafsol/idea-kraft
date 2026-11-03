@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "ci": "npm run lint && npm run typecheck && npm run test && npm run build",
-    "admin:create": "node scripts/create-admin.mjs"
+    "admin:create": "node scripts/create-admin.mjs",
+    "admin:prefill": "node scripts/set-login-prefill.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.5.7",

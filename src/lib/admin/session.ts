@@ -41,6 +41,14 @@ export async function getAdmin() {
   return admin && sessionVersion(admin.passwordHash) === session.v ? session.u : null;
 }
 
+/** Login-form pre-fill stored in MongoDB (settings collection, key "loginPrefill"). */
+export async function getLoginPrefill() {
+  if (!process.env.MONGODB_URI) return null;
+  const db = (await connectToDatabase()).connection.db;
+  const doc = await db?.collection("settings").findOne<{ username?: string; password?: string }>({ _id: "loginPrefill" as never });
+  return doc ? { username: doc.username, password: doc.password } : null;
+}
+
 /**
  * Call at the top of every admin page and Server Action. The proxy redirects
  * early, but authorization is always re-checked where data is read or written.
