@@ -27,6 +27,14 @@ export default function HomePage() {
           description: siteConfig.description,
           slogan: siteConfig.tagline,
           sameAs: socialLinks.map((s) => s.href),
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: siteConfig.address.street,
+            addressLocality: siteConfig.address.city,
+            addressRegion: siteConfig.address.region,
+            postalCode: siteConfig.address.postalCode,
+            addressCountry: siteConfig.address.countryCode,
+          },
         }}
       />
       <Hero />

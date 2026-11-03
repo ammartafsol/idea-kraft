@@ -8,7 +8,19 @@ export const siteConfig = {
     "Novara Studio is an independent creative digital agency. We combine strategy, design and modern engineering to build websites, e-commerce and digital products for ambitious brands.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   email: "hello@novara.studio",
-  location: "Remote-first · Working worldwide",
+  location: "Binghamton, NY · Working worldwide",
+  /** Studio address, used by the contact-page globe, directions link and structured data. */
+  address: {
+    street: "45 Lewis Street",
+    city: "Binghamton",
+    region: "NY",
+    postalCode: "13901",
+    country: "United States",
+    countryCode: "US",
+    timeZone: "America/New_York",
+    lat: 42.0987,
+    lng: -75.9113,
+  },
   /** Editable: shown on the contact page and in the hero status pill. */
   availability: {
     open: true,

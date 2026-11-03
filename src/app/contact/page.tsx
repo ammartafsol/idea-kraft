@@ -6,6 +6,7 @@ import { SplitText } from "@/components/animation/SplitText";
 import { Reveal } from "@/components/animation/Reveal";
 import { ContactForm } from "@/components/sections/contact/ContactForm";
 import { CopyEmail } from "@/components/sections/contact/CopyEmail";
+import { FindUs } from "@/components/sections/contact/FindUs";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { StatusPill } from "@/components/ui/StatusPill";
 
@@ -20,6 +21,7 @@ export default async function ContactPage({ searchParams }: PageProps<"/contact"
   const defaultProjectType = typeof service === "string" ? serviceToProjectType[service] : undefined;
 
   return (
+    <>
     <section aria-labelledby="contact-title" className="container-x pt-36 pb-28 md:pt-48 md:pb-40">
       <Eyebrow index="01">Contact</Eyebrow>
       <SplitText
@@ -67,7 +69,9 @@ export default async function ContactPage({ searchParams }: PageProps<"/contact"
               <h2 className="eyebrow flex items-center gap-2 text-muted">
                 <MapPin className="size-3.5" aria-hidden /> Location
               </h2>
-              <p className="mt-3 text-lg">{siteConfig.location}</p>
+              <a href="#find-us-title" className="mt-3 block text-lg underline decoration-line-strong decoration-1 underline-offset-4 hover:decoration-fg">
+                {siteConfig.address.street}, {siteConfig.address.city}, {siteConfig.address.region}
+              </a>
             </div>
 
             <div>
@@ -90,5 +94,7 @@ export default async function ContactPage({ searchParams }: PageProps<"/contact"
         </aside>
       </div>
     </section>
+    <FindUs />
+    </>
   );
 }

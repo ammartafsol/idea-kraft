@@ -50,10 +50,12 @@
   --accent: #c6ff4d;
   --accent-ink: #101010;
   --accent-text: #c6ff4d;
-  --inverse-bg: #f7f7f4;
-  --inverse-text: #171717;
-  --inverse-muted: #5f5f5b;
-  --inverse-line: rgb(23 23 23 / 0.14);
+  /* Inverse sections stay dark in dark mode (a raised surface) rather than flipping
+     to light, so the lime accent used inside them is always on a dark ground. */
+  --inverse-bg: #1a1a1a;
+  --inverse-text: #f2f2ee;
+  --inverse-muted: #9d9d98;
+  --inverse-line: rgb(255 255 255 / 0.12);
   --selection: #c6ff4d;
 }
 
