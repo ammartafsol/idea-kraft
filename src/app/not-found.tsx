@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/Button";
 import { mainNav } from "@/data/site";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: "Page not found",
@@ -10,6 +12,9 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
+    <>
+    <Navbar />
+    <main id="main">
     <section aria-labelledby="nf-title" className="container-x relative flex min-h-[100svh] flex-col justify-center overflow-hidden pt-28 pb-16">
       <p
         aria-hidden
@@ -46,5 +51,8 @@ export default function NotFound() {
         </nav>
       </div>
     </section>
+    </main>
+    <Footer />
+    </>
   );
 }

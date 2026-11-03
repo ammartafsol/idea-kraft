@@ -15,6 +15,15 @@ import { cn } from "@/lib/utils";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
+/** The anonymous analytics ID, if tracking is allowed in this browser. */
+function readVisitorId() {
+  try {
+    return localStorage.getItem("novara-vid") ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 const fieldBase =
   "peer w-full border-0 border-b border-line-strong bg-transparent px-0 pt-7 pb-3 text-lg outline-none transition-colors placeholder:text-transparent focus:border-fg aria-[invalid=true]:border-[#d4402b]";
 
@@ -55,7 +64,7 @@ export function ContactForm({ defaultProjectType }: { defaultProjectType?: Conta
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ ...values, startedAt }),
+        body: JSON.stringify({ ...values, startedAt, visitorId: readVisitorId() }),
       });
       const data: { ok: boolean; error?: string; fieldErrors?: Record<string, string> } = await res.json().catch(() => ({ ok: false }));
 

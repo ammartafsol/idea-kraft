@@ -35,6 +35,8 @@ export const contactSchema = z.object({
     .max(4000, "Please keep it under 4,000 characters. We can go deeper on a call."),
   /** Honeypot: invisible to people, irresistible to bots. Must stay empty. */
   website: z.string().max(0).optional().or(z.literal("")),
+  /** Anonymous analytics visitor ID (if the visitor allows tracking), links an enquiry to its journey. */
+  visitorId: z.string().regex(/^[a-zA-Z0-9-]{8,64}$/).optional(),
   /** Timestamp of when the form was rendered, used as a time-trap. */
   startedAt: z.number().int().positive(),
 });
@@ -42,7 +44,7 @@ export const contactSchema = z.object({
 export type ContactInput = z.infer<typeof contactSchema>;
 
 /** Client-side shape: the anti-spam timestamp is attached at submit time. */
-export const contactFormSchema = contactSchema.omit({ startedAt: true });
+export const contactFormSchema = contactSchema.omit({ startedAt: true, visitorId: true });
 export type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 /** Maps /services section slugs to a pre-selected project type on /contact?service=… */

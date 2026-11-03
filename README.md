@@ -28,6 +28,8 @@ npm run dev                  # http://localhost:3000
 | Variable               | Required | Purpose                                                                                                                |
 | ---------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
 | `NEXT_PUBLIC_SITE_URL` | Yes, in production | Canonical URLs, sitemap, robots and Open Graph.                                                              |
+| `MONGODB_URI`          | For the admin panel | MongoDB Atlas connection string. Stores analytics and contact enquiries. Use a different database name locally (e.g. `/novara_dev`) than in production (`/novara`). |
+| `ADMIN_SESSION_SECRET` | For the admin panel | Random string (32+ chars) that signs the admin session cookie. Changing it signs everyone out. |
 | `CONTACT_WEBHOOK_URL`  | No       | Each valid contact submission is POSTed here as JSON (Slack, Discord, Zapier, Make, n8n or your own API). Without it, submissions are logged to the server console. |
 
 ## Replacing the placeholder content
@@ -73,11 +75,37 @@ src/
 
 ### Decisions worth knowing
 
-- **No database.** The site has no user data to store, so MongoDB would be dead weight. The contact endpoint validates and forwards to a webhook. Data access goes through the helpers in `src/data/*`, so moving articles or projects to a CMS or MongoDB later only changes those functions.
+- **MongoDB only where it earns its place.** Site content stays in typed files under `src/data/*`. MongoDB (via Mongoose, `src/lib/db`) stores only what genuinely needs a database: analytics events and contact enquiries for the admin panel. Without `MONGODB_URI` the public site works normally and the contact form falls back to the webhook or server log.
 - **Theme without flash.** An inline script in `<head>` sets `data-theme` before first paint (saved choice, then OS preference). React reads it through `useSyncExternalStore`, so there's no context and no effect. Switching uses the View Transitions API for a circular reveal, with a colour cross-fade where that isn't supported.
 - **3D only where it pays off.** Three.js is dynamically imported only on devices with a fine pointer, a ≥768px viewport, WebGL and no reduced-motion preference. Everyone else gets a CSS-rendered orb. The render loop pauses when the hero is off-screen.
 - **Reduced motion.** `MotionConfig reducedMotion="user"` plus a global CSS rule disable transforms, parallax, marquees, the intro loader and the cursor follower.
 - **Contact endpoint.** Shared Zod schema (client and server), same-origin check, content-type and body-size limits, per-IP rate limiting (in memory; swap `src/lib/rate-limit.ts` for Redis on multi-instance hosting), honeypot field and a minimum fill-time trap.
+
+## Admin panel (`/admin`)
+
+A private dashboard at `/admin`. It isn't linked anywhere on the site, is excluded from `robots.txt`, and sends `noindex`.
+
+| View | What it shows |
+| ---- | ------------- |
+| **Overview** | Unique visitors, page views, sessions, new vs returning visitors, pages per session, average time on page, bounce rate, enquiries and conversion rate, each compared with the previous period. Daily traffic chart (hourly for "Today"), top pages, sources, devices, browsers, countries. |
+| **Pages** | Every page with views, unique visitors, entrances and average time. Sortable and searchable. |
+| **Visitors** | Session log with each visitor's journey through the site, filters for new/returning and device, operating systems and `utm_source` campaigns. |
+| **Inquiries** | Contact-form submissions with a New → Read → Replied → Archived pipeline, search, the visitor's page journey before they got in touch, reply-by-email and CSV export. |
+
+All views share date filters (Today, 7/30/90 days, 12 months, custom range), counted in the studio's time zone.
+
+**How visitors are counted:** the site records page views with its own lightweight tracker (`src/components/analytics/Analytics.tsx` → `/api/track`). A random, anonymous ID kept in the visitor's browser tells unique and returning visitors apart, and a per-tab session ID (30-minute timeout) gives sessions and bounce rate. No cookies are set for visitors and no IP addresses are stored, only a country code from the hosting platform. Bots are ignored, and visitors with Do Not Track or Global Privacy Control enabled are not tracked at all.
+
+**Admin accounts** are stored in MongoDB (`admins` collection) with passwords hashed using scrypt, never in plain text or env vars:
+
+```bash
+npm run admin:create                          # create or reset an admin (development DB, .env.local)
+npm run admin:create -- --env .env.vercel     # same, against the production DB
+npm run admin:create -- --list                # list admins
+npm run admin:create -- --delete <username>   # remove an admin
+```
+
+**Security:** sign-in is rate-limited, and checks the hash in constant time (unknown usernames take as long as wrong passwords). Deleting an admin revokes their access immediately. The session is a signed, HTTP-only cookie (7 days). `src/proxy.ts` redirects signed-out requests, and every admin page, server action and export route checks the session again.
 
 ## Deployment
 

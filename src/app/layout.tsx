@@ -2,12 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
 import { siteConfig } from "@/data/site";
 import { themeInitScript } from "@/lib/theme";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
-import { ScrollProgress } from "@/components/layout/ScrollProgress";
-import { BackToTop } from "@/components/layout/BackToTop";
-import { PageLoader } from "@/components/layout/PageLoader";
-import { CursorFollower } from "@/components/layout/CursorFollower";
 import { Providers } from "@/components/layout/Providers";
 import "./globals.css";
 
@@ -88,26 +82,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body>
-        <Providers>
-          <a
-            href="#main"
-            className="sr-only rounded-full bg-fg px-5 py-3 text-sm text-bg focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200]"
-          >
-            Skip to content
-          </a>
-          <span id="top" tabIndex={-1} className="sr-only">
-            Top of page
-          </span>
-          <PageLoader />
-          <ScrollProgress />
-          <Navbar />
-          <main id="main" tabIndex={-1} className="outline-none">
-            {children}
-          </main>
-          <Footer />
-          <BackToTop />
-          <CursorFollower />
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

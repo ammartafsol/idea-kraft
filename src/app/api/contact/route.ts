@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { contactSchema } from "@/lib/contact-schema";
 import { rateLimit } from "@/lib/rate-limit";
+import { connectToDatabase, isDatabaseConfigured } from "@/lib/db/mongo";
+import { Inquiry } from "@/lib/db/models";
 
 const MIN_FILL_TIME_MS = 3000;
 const MAX_BODY_BYTES = 16_000;
@@ -57,7 +59,7 @@ export async function POST(req: NextRequest) {
     const fieldErrors: Record<string, string> = {};
     for (const issue of parsed.error.issues) {
       const key = String(issue.path[0] ?? "form");
-      if (key === "website" || key === "startedAt") continue;
+      if (key === "website" || key === "startedAt" || key === "visitorId") continue;
       fieldErrors[key] ??= issue.message;
     }
     // Bot heuristics failed (honeypot / timestamp): pretend success, store nothing.
@@ -70,41 +72,58 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { website, startedAt, ...submission } = parsed.data;
+  const { website, startedAt, visitorId, ...submission } = parsed.data;
 
   // Spam heuristics: filled honeypot or a form completed impossibly fast.
   if (website || Date.now() - startedAt < MIN_FILL_TIME_MS) {
     return NextResponse.json({ ok: true });
   }
 
+  const country = (req.headers.get("x-vercel-ip-country") ?? req.headers.get("cf-ipcountry") ?? "").slice(0, 2).toUpperCase();
   const payload = {
     ...submission,
+    company: submission.company ?? "",
     receivedAt: new Date().toISOString(),
-    userAgent: req.headers.get("user-agent") ?? undefined,
   };
 
-  const webhook = process.env.CONTACT_WEBHOOK_URL;
-  if (webhook) {
+  // Delivery: save to the database (shown in /admin/inquiries) and/or forward to a webhook.
+  // The request succeeds if at least one configured channel accepted it.
+  let stored = false;
+  let forwarded = false;
+  const channels = { db: isDatabaseConfigured(), webhook: Boolean(process.env.CONTACT_WEBHOOK_URL) };
+
+  if (channels.db) {
     try {
-      const res = await fetch(webhook, {
+      await connectToDatabase();
+      await Inquiry.create({ ...submission, company: submission.company ?? "", country, visitorId: visitorId ?? "" });
+      stored = true;
+    } catch (error) {
+      console.error("[contact] database save failed", error);
+    }
+  }
+
+  if (channels.webhook) {
+    try {
+      const res = await fetch(process.env.CONTACT_WEBHOOK_URL as string, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          text: `New project enquiry from ${payload.name} <${payload.email}>`,
-          ...payload,
-        }),
+        body: JSON.stringify({ text: `New project enquiry from ${payload.name} <${payload.email}>`, ...payload }),
         signal: AbortSignal.timeout(8000),
       });
       if (!res.ok) throw new Error(`Webhook responded ${res.status}`);
+      forwarded = true;
     } catch (error) {
-      console.error("[contact] delivery failed", error);
-      return NextResponse.json(
-        { ok: false, error: "We couldn't deliver your message just now. Please email us directly." },
-        { status: 502 },
-      );
+      console.error("[contact] webhook delivery failed", error);
     }
-  } else {
-    console.info("[contact] new enquiry (set CONTACT_WEBHOOK_URL to forward these):", payload);
+  }
+
+  if (!channels.db && !channels.webhook) {
+    console.info("[contact] new enquiry (configure MONGODB_URI or CONTACT_WEBHOOK_URL to keep these):", payload);
+  } else if (!stored && !forwarded) {
+    return NextResponse.json(
+      { ok: false, error: "We couldn't deliver your message just now. Please email us directly." },
+      { status: 502 },
+    );
   }
 
   return NextResponse.json({ ok: true });
