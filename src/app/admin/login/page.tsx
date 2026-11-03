@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { ArrowLeft, BarChart3, Inbox, Users } from "lucide-react";
 import { getAdmin } from "@/lib/admin/session";
 import { LoginForm } from "./LoginForm";
+import { PUBLIC_DEMO_LOGIN } from "@/data/admin-login";
+import { demoLoginAction } from "@/lib/admin/actions";
 import { LoginArt } from "./LoginArt";
 import { SignedOutToast } from "./SignedOutToast";
 import { Suspense } from "react";
@@ -88,6 +90,18 @@ export default async function LoginPage({ searchParams }: PageProps<"/admin/logi
           <p className="mt-10 font-mono text-[0.7rem] tracking-[0.16em] text-muted uppercase lg:mt-0">Admin</p>
           <h1 className="mt-3 font-display text-[2.6rem] leading-none font-bold tracking-[-0.035em]">Welcome back.</h1>
           <p className="mt-3 text-muted">Sign in to see how the site is performing.</p>
+          {PUBLIC_DEMO_LOGIN && (
+            <form action={demoLoginAction} className="mt-8 rounded-xl border border-accent/50 bg-accent/[0.08] p-4">
+              <p className="text-sm font-medium">Test site · open access</p>
+              <p className="mt-1 text-sm text-muted">No password needed. Explore the dashboard with one click.</p>
+              <button
+                type="submit"
+                className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-accent text-[0.95rem] font-medium text-accent-ink transition-transform active:scale-[0.99]"
+              >
+                Enter dashboard →
+              </button>
+            </form>
+          )}
           <LoginForm next={nextPath} prefill={prefill} />
         </div>
 

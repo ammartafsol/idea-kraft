@@ -9,6 +9,7 @@ import { Admin, Inquiry, inquiryStatuses, type InquiryStatus } from "@/lib/db/mo
 import { hashPassword, verifyPassword } from "./password-hash.mjs";
 import { validateLogin, type LoginFieldErrors } from "./login-schema";
 import { rateLimit } from "@/lib/rate-limit";
+import { DEMO_USERNAME, PUBLIC_DEMO_LOGIN } from "@/data/admin-login";
 import { createAdminSession, destroyAdminSession, isAdminConfigured, requireAdmin } from "./session";
 
 /** Compared against when the username doesn't exist, so a wrong username takes as long as a wrong password. */
@@ -54,6 +55,17 @@ export async function loginAction(_prev: LoginState, formData: FormData): Promis
   const next = String(formData.get("next") ?? "");
   // Only ever redirect inside the admin area (prevents open redirects).
   redirect(next.startsWith("/admin") && !next.startsWith("//") ? next : "/admin");
+}
+
+/** One-click sign-in for the public test site (see src/data/admin-login.ts). No password involved. */
+export async function demoLoginAction() {
+  if (!PUBLIC_DEMO_LOGIN || !isAdminConfigured()) redirect("/admin/login");
+  await connectToDatabase();
+  const admin = await Admin.findOne({ username: DEMO_USERNAME }, { passwordHash: 1 }).lean();
+  if (!admin) redirect("/admin/login");
+  await Admin.updateOne({ _id: admin._id }, { $set: { lastLoginAt: new Date() } });
+  await createAdminSession(DEMO_USERNAME, admin.passwordHash);
+  redirect("/admin");
 }
 
 export async function logoutAction() {
