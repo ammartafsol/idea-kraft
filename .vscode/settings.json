@@ -1,0 +1,42 @@
+{
+  "cSpell.words": [
+    "Dedup",
+    "fingerprintjs",
+    "gamifies",
+    "Hedify",
+    "segoe",
+    "Toastify",
+    "xpdx"
+  ],
+  "piny.project_settings": {
+    "open-pages": ["pinyfakepage.html"],
+    "component-settings": {
+      "src/components/templates/Home/index.tsx:::Temp": {
+        "route": "/"
+      }
+    },
+    "app-routes": {
+      "routes": [
+        "/",
+        "/(auth)/forgot-password",
+        "/(auth)/login",
+        "/(auth)/register",
+        "/(auth)/reset-password",
+        "/(auth)/verify",
+        "/(web)",
+        "/cms"
+      ],
+      "current_route": "/"
+    },
+    "urls": {
+      "pinyfakepage.html": {
+        "open-page-views": [
+          {
+            "w": 1300,
+            "h": 0
+          }
+        ]
+      }
+    }
+  }
+}
