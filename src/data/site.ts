@@ -9,17 +9,18 @@ export const siteConfig = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   email: "hello@novara.studio",
   location: "Binghamton, NY · Working worldwide",
-  /** Studio address, used by the contact-page globe, directions link and structured data. */
+  /** Studio address, used by the contact-page globe, directions link and structured data.
+   *  Coordinates are the OpenStreetMap geocode for 45 Lewis St, Binghamton, NY 13901. */
   address: {
-    street: "45 Lewis Street",
+    street: "45 Lewis St",
     city: "Binghamton",
     region: "NY",
     postalCode: "13901",
     country: "United States",
     countryCode: "US",
     timeZone: "America/New_York",
-    lat: 42.0987,
-    lng: -75.9113,
+    lat: 42.10357,
+    lng: -75.90772,
   },
   /** Editable: shown on the contact page and in the hero status pill. */
   availability: {
