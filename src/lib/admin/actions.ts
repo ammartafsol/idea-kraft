@@ -7,14 +7,18 @@ import { isValidObjectId } from "mongoose";
 import { connectToDatabase } from "@/lib/db/mongo";
 import { Admin, Inquiry, inquiryStatuses, type InquiryStatus } from "@/lib/db/models";
 import { hashPassword, verifyPassword } from "./password-hash.mjs";
+import { validateLogin, type LoginFieldErrors } from "./login-schema";
 import { rateLimit } from "@/lib/rate-limit";
 import { createAdminSession, destroyAdminSession, isAdminConfigured, requireAdmin } from "./session";
 
 /** Compared against when the username doesn't exist, so a wrong username takes as long as a wrong password. */
 let dummyHash: Promise<string> | null = null;
 
-/** `username` is echoed back so the field keeps its value after a failed attempt (React resets forms after actions). */
-export type LoginState = { error?: string; username?: string };
+/**
+ * `username` is echoed back so the field keeps its value after a failed attempt
+ * (React resets forms after actions). `fieldErrors` mirrors client-side validation.
+ */
+export type LoginState = { error?: string; fieldErrors?: LoginFieldErrors; username?: string };
 
 export async function loginAction(_prev: LoginState, formData: FormData): Promise<LoginState> {
   if (!isAdminConfigured()) {
@@ -26,9 +30,12 @@ export async function loginAction(_prev: LoginState, formData: FormData): Promis
     return { error: "Too many attempts. Please wait 15 minutes and try again.", username: String(formData.get("username") ?? "") };
   }
 
-  const username = String(formData.get("username") ?? "").trim().toLowerCase();
-  const password = String(formData.get("password") ?? "");
-  if (!username || !password) return { error: "Enter your username and password.", username };
+  // Same rules as the form; never trust the client.
+  const raw = { username: formData.get("username") ?? "", password: formData.get("password") ?? "" };
+  const { data, errors } = validateLogin(raw);
+  if (!data) return { fieldErrors: errors, username: String(raw.username) };
+  const username = data.username.toLowerCase();
+  const password = data.password;
 
   await connectToDatabase();
   const admin = await Admin.findOne({ username }, { passwordHash: 1 }).lean();
