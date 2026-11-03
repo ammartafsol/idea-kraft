@@ -16,13 +16,13 @@ function resolveSiteUrl() {
 }
 
 export const siteConfig = {
-  name: "NOVARA STUDIO",
-  shortName: "Novara",
+  name: "IDEA KRAFT",
+  shortName: "Idea Kraft",
   tagline: "We Build Digital Experiences That Move Brands Forward.",
   description:
-    "Novara Studio is an independent creative digital agency. We combine strategy, design and modern engineering to build websites, e-commerce and digital products for ambitious brands.",
+    "Idea Kraft is an independent creative digital agency. We combine strategy, design and modern engineering to build websites, e-commerce and digital products for ambitious brands.",
   url: resolveSiteUrl(),
-  email: "hello@novara.studio",
+  email: "hello@idea-kraft.com",
   location: "Binghamton, NY · Working worldwide",
   /** Studio address, used by the contact-page globe, directions link and structured data.
    *  Coordinates are the OpenStreetMap geocode for 45 Lewis St, Binghamton, NY 13901. */
@@ -57,8 +57,8 @@ export const mainNav: NavItem[] = [
 
 /** Replace the hrefs with your real profiles. */
 export const socialLinks: SocialLink[] = [
-  { label: "Instagram", href: "https://instagram.com", handle: "@novara.studio" },
-  { label: "LinkedIn", href: "https://linkedin.com", handle: "Novara Studio" },
-  { label: "Dribbble", href: "https://dribbble.com", handle: "novarastudio" },
-  { label: "GitHub", href: "https://github.com", handle: "novara-studio" },
+  { label: "Instagram", href: "https://instagram.com", handle: "@ideakraft" },
+  { label: "LinkedIn", href: "https://linkedin.com", handle: "Idea Kraft" },
+  { label: "Dribbble", href: "https://dribbble.com", handle: "ideakraft" },
+  { label: "GitHub", href: "https://github.com", handle: "idea-kraft" },
 ];

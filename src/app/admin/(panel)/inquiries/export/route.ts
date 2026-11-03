@@ -26,7 +26,7 @@ export async function GET() {
   return new NextResponse(`﻿${lines.join("\r\n")}`, {
     headers: {
       "content-type": "text/csv; charset=utf-8",
-      "content-disposition": `attachment; filename="novara-inquiries-${date}.csv"`,
+      "content-disposition": `attachment; filename="idea-kraft-inquiries-${date}.csv"`,
       "cache-control": "no-store",
     },
   });

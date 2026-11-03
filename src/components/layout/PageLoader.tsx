@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-const WORD = "NOVARA";
+const WORD = "IDEA KRAFT";
 
 /**
  * First-visit intro. The reveal and exit are pure CSS (see globals.css), so
@@ -36,14 +36,14 @@ export function PageLoader() {
   return (
     <div className="page-loader fixed inset-0 z-[100] flex flex-col justify-between bg-inverse p-5 text-inverse-fg sm:p-8" aria-hidden>
       <div className="flex items-center justify-between font-mono text-xs tracking-[0.14em] text-inverse-muted uppercase">
-        <span>Novara Studio</span>
+        <span>Idea Kraft</span>
         <span>Digital experiences</span>
       </div>
 
-      <p className="flex overflow-hidden font-display text-[clamp(4rem,19vw,17rem)] leading-[0.8] font-bold tracking-[-0.06em]">
+      <p className="flex overflow-hidden font-display text-[clamp(3rem,11.6vw,11rem)] leading-[0.8] font-bold tracking-[-0.06em]">
         {WORD.split("").map((letter, i) => (
           <span key={i} className="loader-letter inline-block" style={{ animationDelay: `${0.08 + i * 0.06}s` }}>
-            {letter}
+            {letter === " " ? "\u00A0" : letter}
           </span>
         ))}
         <span className="loader-letter inline-block text-accent" style={{ animationDelay: `${0.08 + WORD.length * 0.06}s` }}>

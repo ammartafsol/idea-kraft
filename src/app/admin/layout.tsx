@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 /** The admin area is private: never indexed, never linked from the public site. */
 export const metadata: Metadata = {
-  title: { default: "Admin", template: "%s · Novara Admin" },
+  title: { default: "Admin", template: "%s · Idea Kraft Admin" },
   robots: { index: false, follow: false, nocache: true },
 };
 

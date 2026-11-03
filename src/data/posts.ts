@@ -14,7 +14,7 @@ export const posts: Post[] = [
       "A green score in a lab test doesn't mean real users are having a fast experience. Here's how we measure what people actually feel.",
     category: "Performance",
     date: "2026-10-14",
-    author: "Novara Studio",
+    author: "Idea Kraft",
     featured: true,
     cover: { src: unsplash("1647790292957-c7f3b44b3973"), alt: "A minimal desk setup with a monitor, keyboard and headphones" },
     body: [
@@ -41,7 +41,7 @@ export const posts: Post[] = [
       "Animation can guide attention, explain change and add character. Or it can just get in the way. A practical framework for telling the difference.",
     category: "Design",
     date: "2026-09-02",
-    author: "Novara Studio",
+    author: "Idea Kraft",
     cover: { src: unsplash("1762361962969-9e1484e8c8b5"), alt: "Soft abstract curved shapes in neutral tones" },
     body: [
       { type: "p", text: "Every animation asks the user for a little time and attention. Good motion repays that with clarity or delight. Bad motion charges the fee and gives nothing back. Before we animate anything, we ask what job the movement is doing." },
@@ -66,7 +66,7 @@ export const posts: Post[] = [
       "Email clients are a museum of rendering engines. Here's the short list of techniques that keep our templates intact from Outlook to iOS.",
     category: "Development",
     date: "2026-07-21",
-    author: "Novara Studio",
+    author: "Idea Kraft",
     cover: { src: unsplash("1745931492294-a705b9ee4c66"), alt: "A concrete structure mirrored in dark still water" },
     body: [
       { type: "p", text: "Desktop Outlook on Windows renders HTML with Microsoft Word's engine. Gmail strips some styles, and its apps ignore media queries for some account types. Dark mode inverts colours differently in every client. If that sounds chaotic, it is, but it's predictable chaos, and a handful of habits handles most of it." },
@@ -92,7 +92,7 @@ export const posts: Post[] = [
       "The right platform depends on your team, content and budget, not on what's fashionable. A framework we use with clients.",
     category: "Strategy",
     date: "2026-05-30",
-    author: "Novara Studio",
+    author: "Idea Kraft",
     cover: { src: unsplash("1695712551846-4dc15433fbd4"), alt: "A designer working at a table in a bright studio" },
     body: [
       { type: "p", text: "We build both: bespoke WordPress themes in PHP, and headless front ends in Next.js. Clients often arrive convinced they need one or the other. Usually the answer comes from three questions about the people who will run the site after launch." },
@@ -117,7 +117,7 @@ export const posts: Post[] = [
       "You don't need an illustrated mascot or a custom icon set to build a memorable brand. You need a typeface with a point of view, used with discipline.",
     category: "Branding",
     date: "2026-03-18",
-    author: "Novara Studio",
+    author: "Idea Kraft",
     cover: { src: unsplash("1530543787849-128d94430c6b"), alt: "A painted wall in soft yellow and white" },
     body: [
       { type: "p", text: "Small teams often over-invest in brand assets they can't maintain, like illustration systems that need an illustrator for every new page. Typography is the opposite: once it's chosen and the rules are written, anyone on the team can apply it consistently." },
@@ -141,7 +141,7 @@ export const posts: Post[] = [
       "Real-time 3D can make a site unforgettable, or make it unusable. How we budget, lazy-load and gracefully degrade WebGL scenes.",
     category: "Development",
     date: "2026-01-27",
-    author: "Novara Studio",
+    author: "Idea Kraft",
     cover: { src: unsplash("1777734863334-6217dd1af7a6"), alt: "A luminous ring against a muted backdrop" },
     body: [
       { type: "p", text: "A WebGL hero is a promise that the rest of the site is just as considered. Break that promise with a janky scroll or a hot phone, and the 3D becomes a liability. We treat every scene as a feature with a budget." },

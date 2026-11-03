@@ -22,7 +22,7 @@ export function FindUs() {
           <GlobeVisual
             lat={a.lat}
             lng={a.lng}
-            label="Novara Studio"
+            label="Idea Kraft"
             sublabel={`${a.city}, ${a.region}`}
             className="mx-auto aspect-square w-full max-w-[42rem] cursor-grab active:cursor-grabbing"
           />

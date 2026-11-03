@@ -16,7 +16,7 @@ export function Footer() {
           <div className="md:col-span-5">
             <div className="flex items-center gap-3">
               <LogoMark className="[&_path]:fill-accent-ink [&_rect]:fill-accent" />
-              <span className="font-display text-xl font-bold tracking-[-0.04em]">NOVARA STUDIO</span>
+              <span className="font-display text-xl font-bold tracking-[-0.04em]">IDEA KRAFT</span>
             </div>
             <p className="mt-6 max-w-sm text-inverse-muted">
               An independent creative digital agency. We turn bold ideas into websites, stores and digital products

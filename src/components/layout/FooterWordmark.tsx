@@ -14,9 +14,9 @@ export function FooterWordmark() {
     <div ref={ref} aria-hidden className="overflow-hidden pt-16 pb-6 select-none md:pt-24">
       <motion.p
         style={reduce ? undefined : { y }}
-        className="font-display text-[clamp(4rem,21.5vw,22rem)] leading-[0.78] font-bold tracking-[-0.06em] whitespace-nowrap"
+        className="font-display text-[clamp(3rem,13.4vw,15rem)] leading-[0.78] font-bold tracking-[-0.06em] whitespace-nowrap"
       >
-        NOVARA<span className="text-accent">.</span>
+        IDEA KRAFT<span className="text-accent">.</span>
       </motion.p>
     </div>
   );

@@ -51,7 +51,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/admin/logi
         <div className="pointer-events-none relative flex h-full flex-col justify-between p-12">
           <div className="flex items-center gap-2.5">
             <LogoMark className="size-8 [&_path]:fill-[#101010] [&_rect]:fill-[#c6ff4d]" />
-            <span className="font-display text-lg font-bold tracking-[-0.03em]">NOVARA STUDIO</span>
+            <span className="font-display text-lg font-bold tracking-[-0.03em]">IDEA KRAFT</span>
           </div>
 
           <div>
@@ -84,7 +84,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/admin/logi
         <div className="mx-auto flex w-full max-w-[24rem] flex-1 flex-col justify-center py-12">
           <div className="flex items-center gap-2.5 lg:hidden">
             <LogoMark className="size-9" />
-            <span className="font-display text-xl font-bold tracking-[-0.03em]">NOVARA</span>
+            <span className="font-display text-xl font-bold tracking-[-0.03em]">IDEA KRAFT</span>
           </div>
           <p className="mt-10 font-mono text-[0.7rem] tracking-[0.16em] text-muted uppercase lg:mt-0">Admin</p>
           <h1 className="mt-3 font-display text-[2.6rem] leading-none font-bold tracking-[-0.035em]">Welcome back.</h1>

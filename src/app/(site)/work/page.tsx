@@ -7,7 +7,7 @@ import { WorkExplorer } from "@/components/sections/work/WorkExplorer";
 export const metadata: Metadata = {
   title: "Work",
   description:
-    "Selected projects by Novara Studio: e-commerce, web platforms, immersive digital experiences, WordPress builds, branding and email systems.",
+    "Selected projects by Idea Kraft: e-commerce, web platforms, immersive digital experiences, WordPress builds, branding and email systems.",
   alternates: { canonical: "/work" },
 };
 

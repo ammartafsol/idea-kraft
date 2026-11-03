@@ -2,7 +2,7 @@ import type { ServiceIconKey } from "@/types";
 import { cn } from "@/lib/utils";
 
 /**
- * Custom geometric line icons drawn for Novara, on a shared 48px grid with a
+ * Custom geometric line icons drawn for Idea Kraft, on a shared 48px grid with a
  * 1.5px stroke. Each one uses `currentColor` and adds a single solid accent
  * shape, which stays visible on any theme or hover state.
  */

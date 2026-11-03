@@ -12,7 +12,7 @@ import { StatusPill } from "@/components/ui/StatusPill";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Start a project with Novara Studio. Tell us about your website, store, brand or product, and we'll reply with next steps.",
+  description: "Start a project with Idea Kraft. Tell us about your website, store, brand or product, and we'll reply with next steps.",
   alternates: { canonical: "/contact" },
 };
 

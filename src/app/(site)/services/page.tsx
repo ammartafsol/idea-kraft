@@ -9,7 +9,7 @@ import { Reveal } from "@/components/animation/Reveal";
 export const metadata: Metadata = {
   title: "Services",
   description:
-    "Custom web development, WordPress, UI/UX design, website redesign, e-commerce, landing pages, branding and HTML email development from Novara Studio.",
+    "Custom web development, WordPress, UI/UX design, website redesign, e-commerce, landing pages, branding and HTML email development from Idea Kraft.",
   alternates: { canonical: "/services" },
 };
 
@@ -43,7 +43,7 @@ export default function ServicesPage() {
               <span className="size-2.5 rounded-full bg-inverse-line" />
               <span className="size-2.5 rounded-full bg-accent" />
             </span>
-            <span>novara/craft.config</span>
+            <span>idea-kraft/craft.config</span>
           </div>
           <div className="grid gap-10 p-6 md:grid-cols-12 md:p-12">
             <h2 id="craft-title" className="display-md md:col-span-4">

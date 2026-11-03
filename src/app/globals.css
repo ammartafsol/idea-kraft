@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   NOVARA STUDIO — design tokens
+   IDEA KRAFT — design tokens
    Every colour on the site resolves to one of these variables, so the light
    and dark themes are a matter of swapping values on <html data-theme="…">.
 --------------------------------------------------------------------------- */

@@ -1,6 +1,6 @@
-# NOVARA STUDIO
+# IDEA KRAFT
 
-Marketing website for **Novara Studio**, a fictional creative digital agency.
+Marketing website for **Idea Kraft**, a fictional creative digital agency.
 *We Build Digital Experiences That Move Brands Forward.*
 
 Built with Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4, Motion and React Three Fiber.

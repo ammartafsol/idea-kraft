@@ -24,7 +24,7 @@ export default async function PanelLayout({ children }: Readonly<{ children: Rea
         <Link href="/admin" className="flex items-center gap-2.5 px-2 py-1.5">
           <LogoMark className="size-7" />
           <span className="font-display text-[1.05rem] font-bold tracking-[-0.03em]">
-            NOVARA <span className="font-mono text-[0.6rem] font-medium tracking-[0.16em] text-muted">ADMIN</span>
+            IDEA KRAFT <span className="font-mono text-[0.6rem] font-medium tracking-[0.16em] text-muted">ADMIN</span>
           </span>
         </Link>
 
@@ -63,7 +63,7 @@ export default async function PanelLayout({ children }: Readonly<{ children: Rea
         <div className="flex items-center justify-between gap-3 px-4 py-3">
           <Link href="/admin" className="flex items-center gap-2">
             <LogoMark className="size-7" />
-            <span className="font-display font-bold tracking-[-0.03em]">NOVARA</span>
+            <span className="font-display font-bold tracking-[-0.03em]">IDEA KRAFT</span>
             <span className="text-xs text-muted tabular-nums">· {live} live</span>
           </Link>
           <div className="flex items-center gap-2">

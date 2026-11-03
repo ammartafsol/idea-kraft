@@ -189,7 +189,7 @@ function BackgroundGrid() {
 }
 
 function RotatingBadge({ delay, className }: { delay: number; className?: string }) {
-  const text = "Novara Studio • Strategy • Design • Code • ";
+  const text = "Idea Kraft • Strategy • Design • Code • ";
   const pathId = `badge-circle${useId().replace(/:/g, "")}`;
   return (
     <motion.div

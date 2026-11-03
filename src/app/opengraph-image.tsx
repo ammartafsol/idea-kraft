@@ -26,7 +26,7 @@ async function loadDisplayFont(text: string) {
 
 /** Default social card, generated at build time in the brand's colours. */
 export default async function OpengraphImage() {
-  const font = await loadDisplayFont(`${LINES.join(" ").toUpperCase()}.NOVARA STUDIO${FOOTER_LEFT}${siteConfig.tagline}`);
+  const font = await loadDisplayFont(`${LINES.join(" ").toUpperCase()}.IDEA KRAFT${FOOTER_LEFT}${siteConfig.tagline}`);
   const display = font ? "Bricolage" : "sans-serif";
 
   return new ImageResponse(
@@ -49,7 +49,7 @@ export default async function OpengraphImage() {
             <rect width="32" height="32" rx="7" fill="#C6FF4D" />
             <path d="M16 5.5c.6 5.6 4.9 9.9 10.5 10.5-5.6.6-9.9 4.9-10.5 10.5-.6-5.6-4.9-9.9-10.5-10.5 5.6-.6 9.9-4.9 10.5-10.5Z" fill="#101010" />
           </svg>
-          <div style={{ fontFamily: display, fontSize: 30, letterSpacing: -0.5 }}>NOVARA STUDIO</div>
+          <div style={{ fontFamily: display, fontSize: 30, letterSpacing: -0.5 }}>IDEA KRAFT</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", fontFamily: display, fontSize: 104, lineHeight: 0.92, letterSpacing: -3, textTransform: "uppercase" }}>
           {LINES.map((line, i) => (

@@ -16,7 +16,7 @@ export function WhyUs() {
             <p className="eyebrow flex items-center gap-3 text-inverse-muted">
               <span className="text-inverse-fg">(04)</span>
               <span aria-hidden className="h-px w-8 bg-inverse-line" />
-              Why Novara
+              Why Idea Kraft
             </p>
             <SplitText id="why-title" lines={["Details are", "the design."]} className="display-lg mt-6" />
             <Reveal delay={0.2}>

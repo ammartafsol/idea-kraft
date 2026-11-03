@@ -16,7 +16,7 @@ import { pad } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Novara Studio is a small, senior team of designers and engineers building websites and digital products for ambitious brands. Meet the studio, our philosophy and our values.",
+    "Idea Kraft is a small, senior team of designers and engineers building websites and digital products for ambitious brands. Meet the studio, our philosophy and our values.",
   alternates: { canonical: "/about" },
 };
 
@@ -41,7 +41,7 @@ export default function AboutPage() {
         eyebrow="About the studio"
         index="01"
         title={["Small studio.", "Serious craft."]}
-        intro="Novara is an independent creative digital agency: a compact, senior team of designers and engineers who'd rather do fewer projects exceptionally well than many projects adequately."
+        intro="Idea Kraft is an independent creative digital agency: a compact, senior team of designers and engineers who'd rather do fewer projects exceptionally well than many projects adequately."
       />
 
       {/* Story: asymmetric image pair */}
@@ -72,7 +72,7 @@ export default function AboutPage() {
           </Eyebrow>
           <ScrollHighlight
             className="display-md md:col-span-9"
-            text="We started Novara because we kept seeing the same gap: beautiful designs that fell apart in the browser, and solid code that nobody felt anything about. We built a studio where designers and engineers share one table, one standard and one goal: work people remember."
+            text="We started Idea Kraft because we kept seeing the same gap: beautiful designs that fell apart in the browser, and solid code that nobody felt anything about. We built a studio where designers and engineers share one table, one standard and one goal: work people remember."
           />
         </div>
       </section>
