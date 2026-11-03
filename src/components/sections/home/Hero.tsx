@@ -65,7 +65,7 @@ export function Hero() {
       {/* Desktop 3D centrepiece: sits behind the content on the right and follows the mouse. */}
       <motion.div
         style={reduce ? undefined : { scale: visualScale, opacity: fade }}
-        className="pointer-events-none absolute top-[10%] right-[0%] -z-10 hidden aspect-square w-[min(46vw,680px)] md:block"
+        className="absolute top-[10%] right-[0%] z-10 hidden aspect-square w-[min(46vw,680px)] md:block"
       >
         <motion.div
           className="size-full"
@@ -73,7 +73,7 @@ export function Hero() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.6, delay: delay + 0.2, ease }}
         >
-          {isDesktop && <HeroVisual pointer={pointer} className="size-full" />}
+          {isDesktop && <HeroVisual pointer={pointer} touchable className="size-full" />}
         </motion.div>
       </motion.div>
 
@@ -118,7 +118,7 @@ export function Hero() {
           )}
         </motion.div>
 
-        <div className="mt-4 grid items-end gap-8 md:mt-16 md:grid-cols-12">
+        <div className="relative z-20 mt-4 grid items-end gap-8 md:mt-16 md:grid-cols-12">
           <motion.p
             className="lede text-muted md:col-span-5"
             initial={{ opacity: 0, y: 20 }}

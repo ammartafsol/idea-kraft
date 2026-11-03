@@ -4,7 +4,7 @@ import { motion, useMotionValue, useSpring } from "motion/react";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
-type Mode = "default" | "link" | "view" | "hidden";
+type Mode = "default" | "link" | "view" | "drag" | "hidden";
 
 /**
  * Desktop-only ring that trails the native cursor (which stays visible, so
@@ -31,9 +31,10 @@ function Ring() {
       y.set(e.clientY);
       const target = e.target as Element | null;
       const viewEl = target?.closest?.("[data-cursor='view']");
+      const dragEl = target?.closest?.("[data-cursor='drag']");
       const interactive = target?.closest?.("a, button, [role='button'], label, summary");
       const field = target?.closest?.("input, textarea, select, [contenteditable]");
-      setMode(field ? "hidden" : viewEl ? "view" : interactive ? "link" : "default");
+      setMode(field ? "hidden" : viewEl ? "view" : dragEl ? "drag" : interactive ? "link" : "default");
     }
     const onLeave = () => setMode("hidden");
     window.addEventListener("pointermove", onMove, { passive: true });
@@ -44,7 +45,8 @@ function Ring() {
     };
   }, [x, y]);
 
-  const size = mode === "view" ? 96 : mode === "link" ? 56 : 28;
+  const badge = mode === "view" || mode === "drag";
+  const size = mode === "view" ? 96 : mode === "drag" ? 76 : mode === "link" ? 56 : 28;
 
   return (
     <motion.div
@@ -58,18 +60,18 @@ function Ring() {
           width: size,
           height: size,
           opacity: mode === "hidden" ? 0 : 1,
-          backgroundColor: mode === "view" ? "var(--accent)" : "rgba(0,0,0,0)",
-          borderColor: mode === "view" ? "var(--accent)" : "var(--line-strong)",
+          backgroundColor: badge ? "var(--accent)" : "rgba(0,0,0,0)",
+          borderColor: badge ? "var(--accent)" : "var(--line-strong)",
         }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
         style={{ borderWidth: 1, borderStyle: "solid" }}
       >
         <motion.span
           className="font-mono text-[0.7rem] font-medium tracking-[0.14em] text-accent-ink uppercase"
-          animate={{ opacity: mode === "view" ? 1 : 0, scale: mode === "view" ? 1 : 0.6 }}
+          animate={{ opacity: badge ? 1 : 0, scale: badge ? 1 : 0.6 }}
           transition={{ duration: 0.25 }}
         >
-          View
+          {mode === "drag" ? "↔ Drag" : "View"}
         </motion.span>
       </motion.div>
     </motion.div>

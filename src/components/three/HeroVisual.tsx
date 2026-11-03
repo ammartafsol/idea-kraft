@@ -55,6 +55,7 @@ export function HeroVisual({
 
   function onPointerDown(e: PointerEvent<HTMLDivElement>) {
     drag.current = { x: e.clientX, t: performance.now(), moved: 0 };
+    e.currentTarget.setPointerCapture?.(e.pointerId);
   }
 
   function onPointerMove(e: PointerEvent<HTMLDivElement>) {
@@ -90,6 +91,7 @@ export function HeroVisual({
     <div
       ref={ref}
       className={cn("relative", touchable && "cursor-grab touch-pan-y select-none active:cursor-grabbing", className)}
+      data-cursor={touchable && desktop ? "drag" : undefined}
       {...(touchable && live
         ? { onPointerDown, onPointerMove, onPointerUp, onPointerCancel: () => (drag.current = null) }
         : {})}
@@ -108,7 +110,7 @@ export function HeroVisual({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.3, delay: 0 } }}
             transition={{ duration: 0.6, delay: 2.4 }}
-            className="pointer-events-none absolute bottom-[6%] left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-line bg-bg/80 px-3 py-1.5 font-mono text-[0.62rem] tracking-[0.14em] whitespace-nowrap uppercase backdrop-blur"
+            className="pointer-events-none absolute bottom-[6%] left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-line bg-bg/80 px-3.5 py-1.5 font-mono text-[0.62rem] tracking-[0.14em] whitespace-nowrap uppercase backdrop-blur md:bottom-[9%] md:text-[0.68rem]"
           >
             <motion.span
               className="inline-block"
@@ -117,7 +119,7 @@ export function HeroVisual({
             >
               ↔
             </motion.span>
-            Drag · Tap
+            {desktop ? "Drag to spin · Click to ripple" : "Swipe to spin · Tap to ripple"}
           </motion.span>
         )}
       </AnimatePresence>
