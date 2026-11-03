@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { requireAdmin } from "@/lib/admin/session";
 import { getBreakdown, getTimeseries, getTopPages, getTotals } from "@/lib/admin/analytics";
-import { parseRange, rangeQuery } from "@/lib/admin/range";
+import { parseRange, rangeQuery, type DateRange } from "@/lib/admin/range";
 import { countryFlag, countryName, delta, fmtDecimal, fmtDuration, fmtNumber, fmtPercent } from "@/lib/admin/format";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { RangePicker } from "@/components/admin/RangePicker";
@@ -9,6 +10,7 @@ import { AutoRefresh } from "@/components/admin/AdminControls";
 import { KpiTile } from "@/components/admin/KpiTile";
 import { TrafficChart } from "@/components/admin/TrafficChart";
 import { BarList } from "@/components/admin/BarList";
+import { OverviewBodySkeleton } from "@/components/admin/PageSkeletons";
 
 export const metadata = { title: "Overview" };
 
@@ -17,6 +19,22 @@ export default async function OverviewPage({ searchParams }: PageProps<"/admin">
   const sp = await searchParams;
   const range = parseRange({ range: String(sp.range ?? ""), from: sp.from as string, to: sp.to as string });
 
+  // The header renders instantly; the data section streams in. Keying the boundary by
+  // range shows the skeleton whenever the range changes.
+  return (
+    <>
+      <AdminHeader title="Overview" description={`${range.label} · compared with the previous ${range.days === 1 ? "day" : `${range.days} days`}`}>
+        <RangePicker current={range.key} fromYmd={range.fromYmd} toYmd={range.toYmd} />
+        <AutoRefresh />
+      </AdminHeader>
+      <Suspense key={rangeQuery(range)} fallback={<OverviewBodySkeleton />}>
+        <OverviewBody range={range} />
+      </Suspense>
+    </>
+  );
+}
+
+async function OverviewBody({ range }: { range: DateRange }) {
   const [{ current: c, previous: p }, series, pages, referrers, devices, browsers, countries] = await Promise.all([
     getTotals(range),
     getTimeseries(range),
@@ -29,12 +47,7 @@ export default async function OverviewPage({ searchParams }: PageProps<"/admin">
 
   return (
     <>
-      <AdminHeader title="Overview" description={`${range.label} · compared with the previous ${range.days === 1 ? "day" : `${range.days} days`}`}>
-        <RangePicker current={range.key} fromYmd={range.fromYmd} toYmd={range.toYmd} />
-        <AutoRefresh />
-      </AdminHeader>
-
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-5">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-5">
         <KpiTile label="Unique visitors" value={fmtNumber(c.visitors)} change={delta(c.visitors, p.visitors)} emphasis />
         <KpiTile label="Page views" value={fmtNumber(c.views)} change={delta(c.views, p.views)} />
         <KpiTile label="Sessions" value={fmtNumber(c.sessions)} change={delta(c.sessions, p.sessions)} />

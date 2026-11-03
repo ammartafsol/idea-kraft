@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Download, Mail } from "lucide-react";
 import { requireAdmin } from "@/lib/admin/session";
 import { getInquiries, getVisitorJourney } from "@/lib/admin/analytics";
@@ -7,6 +8,7 @@ import { AdminHeader } from "@/components/admin/AdminHeader";
 import { ParamLink, SearchBox } from "@/components/admin/AdminControls";
 import { InquiryActions, MarkReadOnOpen } from "@/components/admin/InquiryActions";
 import { cn } from "@/lib/utils";
+import { InquiriesBodySkeleton } from "@/components/admin/PageSkeletons";
 
 export const metadata = { title: "Inquiries" };
 
@@ -28,10 +30,6 @@ export default async function InquiriesPage({ searchParams }: PageProps<"/admin/
   const sort = sp.sort === "oldest" ? "oldest" : "newest";
   const page = Math.max(1, Number(sp.page) || 1);
 
-  const { rows, total, pageSize, counts } = await getInquiries({ status, q, page, sort });
-  const journeys = await Promise.all(rows.map((r) => getVisitorJourney(r.visitorId, r.createdAt).catch(() => [])));
-  const pages = Math.max(1, Math.ceil(total / pageSize));
-
   return (
     <>
       <AdminHeader title="Inquiries" description="Every contact-form submission, newest first.">
@@ -40,23 +38,37 @@ export default async function InquiriesPage({ searchParams }: PageProps<"/admin/
         </a>
       </AdminHeader>
 
-      <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-wrap gap-2">
-          <ParamLink name="status" value={null} className={tab} activeClassName={tabActive}>
-            All <span className="tabular-nums opacity-70">{counts.all}</span>
+      {/* Search stays outside the boundary so it keeps focus while results update. */}
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <SearchBox placeholder="Search name, email, company, message" />
+        <ParamLink name="sort" value={sort === "newest" ? "oldest" : null} className={tab}>
+          {sort === "newest" ? "Newest first" : "Oldest first"} ⇅
+        </ParamLink>
+      </div>
+
+      <Suspense key={`${status}|${sort}|${page}`} fallback={<InquiriesBodySkeleton />}>
+        <InquiriesBody status={status} q={q} sort={sort} page={page} />
+      </Suspense>
+    </>
+  );
+}
+
+async function InquiriesBody({ status, q, sort, page }: { status?: string; q: string; sort: "newest" | "oldest"; page: number }) {
+  const { rows, total, pageSize, counts } = await getInquiries({ status, q, page, sort });
+  const journeys = await Promise.all(rows.map((r) => getVisitorJourney(r.visitorId, r.createdAt).catch(() => [])));
+  const pages = Math.max(1, Math.ceil(total / pageSize));
+
+  return (
+    <>
+      <div className="mb-4 flex flex-wrap gap-2">
+        <ParamLink name="status" value={null} className={tab} activeClassName={tabActive}>
+          All <span className="tabular-nums opacity-70">{counts.all}</span>
+        </ParamLink>
+        {(["new", "read", "replied", "archived"] as const).map((s) => (
+          <ParamLink key={s} name="status" value={s} className={cn(tab, "capitalize")} activeClassName={tabActive}>
+            {s} <span className="tabular-nums opacity-70">{counts[s]}</span>
           </ParamLink>
-          {(["new", "read", "replied", "archived"] as const).map((s) => (
-            <ParamLink key={s} name="status" value={s} className={cn(tab, "capitalize")} activeClassName={tabActive}>
-              {s} <span className="tabular-nums opacity-70">{counts[s]}</span>
-            </ParamLink>
-          ))}
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <SearchBox placeholder="Search name, email, company, message" />
-          <ParamLink name="sort" value={sort === "newest" ? "oldest" : null} className={tab}>
-            {sort === "newest" ? "Newest first" : "Oldest first"} ⇅
-          </ParamLink>
-        </div>
+        ))}
       </div>
 
       {rows.length === 0 ? (

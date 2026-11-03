@@ -1,10 +1,12 @@
+import { Suspense } from "react";
 import { requireAdmin } from "@/lib/admin/session";
 import { getTopPages, type PageSort } from "@/lib/admin/analytics";
-import { parseRange } from "@/lib/admin/range";
+import { parseRange, rangeQuery, type DateRange } from "@/lib/admin/range";
 import { fmtDuration, fmtNumber } from "@/lib/admin/format";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { RangePicker } from "@/components/admin/RangePicker";
 import { SearchBox, SortHeader } from "@/components/admin/AdminControls";
+import { PagesBodySkeleton } from "@/components/admin/PageSkeletons";
 
 export const metadata = { title: "Pages" };
 
@@ -13,8 +15,8 @@ export default async function PagesPage({ searchParams }: PageProps<"/admin/page
   const sp = await searchParams;
   const range = parseRange({ range: String(sp.range ?? ""), from: sp.from as string, to: sp.to as string });
   const q = typeof sp.q === "string" ? sp.q : "";
-  const rows = await getTopPages(range, { sort: sp.sort as PageSort, dir: sp.dir === "asc" ? "asc" : "desc", q, limit: 500 });
-  const totalViews = rows.reduce((s, r) => s + r.views, 0);
+  const sort = sp.sort as PageSort;
+  const dir = sp.dir === "asc" ? "asc" : "desc";
 
   return (
     <>
@@ -22,16 +24,31 @@ export default async function PagesPage({ searchParams }: PageProps<"/admin/page
         <RangePicker current={range.key} fromYmd={range.fromYmd} toYmd={range.toYmd} />
       </AdminHeader>
 
-      <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      {/* Search lives outside the boundary so it keeps focus; typing keeps current results until new ones arrive. */}
+      <div className="mb-3">
         <SearchBox placeholder="Filter by path, e.g. /work" />
-        <p className="text-sm text-muted">
-          {rows.length} {rows.length === 1 ? "page" : "pages"} · {fmtNumber(totalViews)} views
-        </p>
       </div>
+
+      <Suspense key={`${rangeQuery(range)}|${sort}|${dir}`} fallback={<PagesBodySkeleton />}>
+        <PagesBody range={range} q={q} sort={sort} dir={dir} />
+      </Suspense>
+    </>
+  );
+}
+
+async function PagesBody({ range, q, sort, dir }: { range: DateRange; q: string; sort: PageSort; dir: "asc" | "desc" }) {
+  const rows = await getTopPages(range, { sort, dir, q, limit: 500 });
+  const totalViews = rows.reduce((s, r) => s + r.views, 0);
+
+  return (
+    <>
+      <p className="mb-3 text-sm text-muted">
+        {rows.length} {rows.length === 1 ? "page" : "pages"} · {fmtNumber(totalViews)} views
+      </p>
 
       <div className="overflow-x-auto rounded-lg border border-line bg-raised">
         <table className="w-full min-w-[40rem] text-sm">
-          <caption className="sr-only">Pages sorted by {String(sp.sort ?? "views")}</caption>
+          <caption className="sr-only">Pages sorted by {sort ?? "views"}</caption>
           <thead className="border-b border-line text-left text-xs">
             <tr>
               <SortHeader field="path" label="Page" defaultDir="asc" />

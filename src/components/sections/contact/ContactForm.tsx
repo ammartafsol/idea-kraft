@@ -12,6 +12,8 @@ import {
   type ContactFormValues,
 } from "@/lib/contact-schema";
 import { cn } from "@/lib/utils";
+import RenderToast from "@/components/ui/RenderToast";
+import { siteConfig } from "@/data/site";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -69,6 +71,12 @@ export function ContactForm({ defaultProjectType }: { defaultProjectType?: Conta
       const data: { ok: boolean; error?: string; fieldErrors?: Record<string, string> } = await res.json().catch(() => ({ ok: false }));
 
       if (res.ok && data.ok) {
+        const firstName = values.name.trim().split(/\s+/)[0];
+        RenderToast({
+          type: "success",
+          message: `Thanks, ${firstName}! Your message is in. We'll reply ${siteConfig.responseTime.toLowerCase()}.`,
+          autoClose: 5000,
+        });
         setStatus("success");
         reset();
         setStartedAt(0);
@@ -79,11 +87,15 @@ export function ContactForm({ defaultProjectType }: { defaultProjectType?: Conta
           setError(field as keyof ContactFormValues, { type: "server", message }),
         );
       }
-      setServerError(data.error ?? "Something went wrong. Please try again.");
+      const message = data.error ?? "Something went wrong. Please try again.";
+      setServerError(message);
       setStatus("error");
+      RenderToast({ type: "error", message });
     } catch {
-      setServerError("We couldn't reach the server. Check your connection and try again.");
+      const message = "We couldn't reach the server. Check your connection and try again.";
+      setServerError(message);
       setStatus("error");
+      RenderToast({ type: "error", message });
     }
   }
 

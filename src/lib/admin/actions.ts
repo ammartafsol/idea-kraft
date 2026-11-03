@@ -58,21 +58,39 @@ export async function loginAction(_prev: LoginState, formData: FormData): Promis
 
 export async function logoutAction() {
   await destroyAdminSession();
-  redirect("/admin/login");
+  // The login page reads this flag once to confirm the sign-out with a toast.
+  redirect("/admin/login?signedOut=1");
 }
 
-export async function setInquiryStatus(id: string, status: InquiryStatus) {
+/** Result shape for admin mutations, so the UI can show a success or error toast. */
+export type ActionResult = { ok: true } | { ok: false; error: string };
+
+export async function setInquiryStatus(id: string, status: InquiryStatus): Promise<ActionResult> {
   await requireAdmin();
-  if (!isValidObjectId(id) || !inquiryStatuses.includes(status)) return;
-  await connectToDatabase();
-  await Inquiry.updateOne({ _id: id }, { $set: { status } });
+  if (!isValidObjectId(id) || !inquiryStatuses.includes(status)) return { ok: false, error: "That status isn't valid." };
+  try {
+    await connectToDatabase();
+    const res = await Inquiry.updateOne({ _id: id }, { $set: { status } });
+    if (res.matchedCount === 0) return { ok: false, error: "This enquiry no longer exists." };
+  } catch (error) {
+    console.error("[admin] status update failed", error);
+    return { ok: false, error: "Couldn't update the status. Please try again." };
+  }
   revalidatePath("/admin", "layout");
+  return { ok: true };
 }
 
-export async function deleteInquiry(id: string) {
+export async function deleteInquiry(id: string): Promise<ActionResult> {
   await requireAdmin();
-  if (!isValidObjectId(id)) return;
-  await connectToDatabase();
-  await Inquiry.deleteOne({ _id: id });
+  if (!isValidObjectId(id)) return { ok: false, error: "That enquiry couldn't be found." };
+  try {
+    await connectToDatabase();
+    const res = await Inquiry.deleteOne({ _id: id });
+    if (res.deletedCount === 0) return { ok: false, error: "This enquiry was already deleted." };
+  } catch (error) {
+    console.error("[admin] delete failed", error);
+    return { ok: false, error: "Couldn't delete the enquiry. Please try again." };
+  }
   revalidatePath("/admin", "layout");
+  return { ok: true };
 }

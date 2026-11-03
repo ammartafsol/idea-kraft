@@ -5,6 +5,8 @@ import { ArrowLeft, BarChart3, Inbox, Users } from "lucide-react";
 import { getAdmin } from "@/lib/admin/session";
 import { LoginForm } from "./LoginForm";
 import { LoginArt } from "./LoginArt";
+import { SignedOutToast } from "./SignedOutToast";
+import { Suspense } from "react";
 import { LogoMark } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
@@ -23,6 +25,9 @@ export default async function LoginPage({ searchParams }: PageProps<"/admin/logi
 
   return (
     <div className="grid min-h-[100svh] lg:grid-cols-[1.15fr_1fr]">
+      <Suspense>
+        <SignedOutToast />
+      </Suspense>
       {/* Brand panel: always dark, regardless of theme */}
       <aside className="relative hidden overflow-hidden bg-[#0c0c0c] text-[#f2f2ee] lg:block" aria-hidden>
         {/* Hairline grid, echoing the public site */}

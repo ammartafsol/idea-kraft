@@ -1,11 +1,13 @@
+import { Suspense } from "react";
 import { requireAdmin } from "@/lib/admin/session";
 import { getBreakdown, getSessions, getTotals } from "@/lib/admin/analytics";
-import { parseRange, TZ } from "@/lib/admin/range";
+import { parseRange, rangeQuery, TZ, type DateRange } from "@/lib/admin/range";
 import { countryFlag, countryName, fmtDateTime, fmtDuration, fmtNumber, fmtPercent } from "@/lib/admin/format";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { RangePicker } from "@/components/admin/RangePicker";
 import { ParamLink } from "@/components/admin/AdminControls";
 import { BarList } from "@/components/admin/BarList";
+import { VisitorsBodySkeleton } from "@/components/admin/PageSkeletons";
 import { cn } from "@/lib/utils";
 
 export const metadata = { title: "Visitors" };
@@ -21,6 +23,29 @@ export default async function VisitorsPage({ searchParams }: PageProps<"/admin/v
   const device = typeof sp.device === "string" ? sp.device : undefined;
   const page = Math.max(1, Number(sp.page) || 1);
 
+  return (
+    <>
+      <AdminHeader title="Visitors" description={`Sessions and visitor journeys · ${range.label}`}>
+        <RangePicker current={range.key} fromYmd={range.fromYmd} toYmd={range.toYmd} />
+      </AdminHeader>
+      <Suspense key={`${rangeQuery(range)}|${type}|${device}|${page}`} fallback={<VisitorsBodySkeleton />}>
+        <VisitorsBody range={range} type={type} device={device} page={page} />
+      </Suspense>
+    </>
+  );
+}
+
+async function VisitorsBody({
+  range,
+  type,
+  device,
+  page,
+}: {
+  range: DateRange;
+  type?: "new" | "returning";
+  device?: string;
+  page: number;
+}) {
   const [{ current: c }, { rows, total, pageSize }, os, utm] = await Promise.all([
     getTotals(range),
     getSessions(range, { page, type, device }),
@@ -31,10 +56,6 @@ export default async function VisitorsPage({ searchParams }: PageProps<"/admin/v
 
   return (
     <>
-      <AdminHeader title="Visitors" description={`Sessions and visitor journeys · ${range.label}`}>
-        <RangePicker current={range.key} fromYmd={range.fromYmd} toYmd={range.toYmd} />
-      </AdminHeader>
-
       {/* New vs returning: a part-to-whole of one total, shown as a single segmented bar. */}
       <section className="rounded-lg border border-line bg-raised p-4 sm:p-5">
         <div className="flex flex-wrap items-baseline justify-between gap-2">

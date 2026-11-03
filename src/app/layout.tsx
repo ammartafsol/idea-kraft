@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
 import { siteConfig } from "@/data/site";
 import { themeInitScript } from "@/lib/theme";
 import { Providers } from "@/components/layout/Providers";
+import { Toaster } from "@/components/ui/Toaster";
 import "./globals.css";
 
 const display = Bricolage_Grotesque({
@@ -82,7 +83,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );

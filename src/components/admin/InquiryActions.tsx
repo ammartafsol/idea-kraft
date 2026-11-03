@@ -3,6 +3,7 @@
 import { useRef, useTransition } from "react";
 import { LoaderCircle, Trash2 } from "lucide-react";
 import { ConfirmDialog, type ConfirmDialogHandle } from "./ConfirmDialog";
+import RenderToast from "@/components/ui/RenderToast";
 import { deleteInquiry, setInquiryStatus } from "@/lib/admin/actions";
 import type { InquiryStatus } from "@/lib/db/models";
 
@@ -27,7 +28,20 @@ export function InquiryActions({ id, status, name }: { id: string; status: Inqui
         id={`status-${id}`}
         defaultValue={status}
         disabled={pending}
-        onChange={(e) => startTransition(() => setInquiryStatus(id, e.target.value as InquiryStatus))}
+        onChange={(e) => {
+          const select = e.currentTarget;
+          const next = select.value as InquiryStatus;
+          const label = statuses.find((s) => s.value === next)?.label ?? next;
+          startTransition(async () => {
+            const res = await setInquiryStatus(id, next);
+            if (res.ok) {
+              RenderToast({ type: "success", message: `${name}'s enquiry marked as ${label}.` });
+            } else {
+              select.value = status; // show the value that's actually saved
+              RenderToast({ type: "error", message: res.error });
+            }
+          });
+        }}
         className="h-8 rounded-lg border border-line bg-raised px-2 text-[0.8rem]"
       >
         {statuses.map((s) => (
@@ -59,8 +73,9 @@ export function InquiryActions({ id, status, name }: { id: string; status: Inqui
         pending={deleting}
         onConfirm={() =>
           startDeleting(async () => {
-            await deleteInquiry(id);
+            const res = await deleteInquiry(id);
             confirm.current?.close();
+            RenderToast(res.ok ? { type: "success", message: `Enquiry from ${name} deleted.` } : { type: "error", message: res.error });
           })
         }
       />
@@ -75,7 +90,9 @@ export function MarkReadOnOpen({ id, status, children }: { id: string; status: I
     <details
       className="group"
       onToggle={(e) => {
-        if ((e.currentTarget as HTMLDetailsElement).open && status === "new") startTransition(() => setInquiryStatus(id, "read"));
+        if ((e.currentTarget as HTMLDetailsElement).open && status === "new") startTransition(async () => {
+            await setInquiryStatus(id, "read"); // silent: opening isn't a deliberate change
+          });
       }}
     >
       {children}

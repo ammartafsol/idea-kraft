@@ -356,6 +356,40 @@ html.theme-fade *::after {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Toasts (react-toastify) — tuned to the admin's tokens.
+--------------------------------------------------------------------------- */
+.Toastify {
+  --toastify-font-family: var(--font-sans);
+  --toastify-toast-bd-radius: 12px;
+  --toastify-color-light: var(--surface-raised);
+  --toastify-text-color-light: var(--text);
+  --toastify-color-dark: #1e1e1e;
+  --toastify-text-color-dark: #f2f2ee;
+  --toastify-color-success: #0ca30c;
+  --toastify-color-error: #d03b3b;
+  --toastify-color-progress-light: var(--accent-text);
+  --toastify-color-progress-dark: var(--accent);
+}
+/* Sit below the fixed site navbar / admin top bar instead of covering it. */
+.Toastify .Toastify__toast-container--top-right {
+  top: 5.25rem;
+}
+.Toastify .Toastify__toast {
+  border: 1px solid var(--line);
+  font-size: 0.9rem;
+  box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.35);
+}
+
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
 @keyframes spin-slow {
   to {
     transform: rotate(360deg);
